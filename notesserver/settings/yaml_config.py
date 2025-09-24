@@ -26,7 +26,27 @@ CONFIG_ROOT = Path(EDXNOTES_CONFIG_ROOT)
 with open(CONFIG_ROOT / "edx_notes_api.yml") as yaml_file:
     config_from_yaml = yaml.safe_load(yaml_file)
 
+
+STORAGES = {
+    "default": {
+        "BACKEND": "django.core.files.storage.FileSystemStorage",
+    },
+    "staticfiles": {
+        "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
+    },
+}
+
+
+default_file_storage = config_from_yaml.pop('DEFAULT_FILE_STORAGE', None)
+staticfiles_storage = config_from_yaml.pop('STATICFILES_STORAGE', None)
+
 vars().update(config_from_yaml)
+
+if default_file_storage:
+    STORAGES["default"]["BACKEND"] = default_file_storage
+if staticfiles_storage:
+    STORAGES["staticfiles"]["BACKEND"] = staticfiles_storage
+
 
 # Support environment overrides for migrations
 DB_OVERRIDES = {
